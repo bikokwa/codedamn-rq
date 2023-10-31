@@ -9,8 +9,12 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 function App() {
   const [postID, setPostID] = useState(null);
 
-  const { isLoading, data: posts } = useQuery(["posts"], () =>
-    fetcher("https://jsonplaceholder.typicode.com/posts")
+  const { isLoading, data: posts } = useQuery(
+    ["posts"],
+    () => fetcher("https://jsonplaceholder.typicode.com/posts"),
+    {
+      select: (post) => post.slice(0, 5),
+    }
   );
 
   if (isLoading) return <h1>Loading...</h1>;
