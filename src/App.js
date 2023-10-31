@@ -12,15 +12,24 @@ function App() {
   const { isLoading, data: posts } = useQuery(
     ["posts"],
     () => fetcher("https://jsonplaceholder.typicode.com/posts"),
-    {
-      select: (post) => post.slice(0, 5),
-    }
+    { staleTime: Infinity }
   );
 
   if (isLoading) return <h1>Loading...</h1>;
 
   if (postID !== null) {
     return <Post postID={postID} goBack={() => setPostID(null)} />;
+  }
+
+  function mutateTitle(id) {
+    queryClient.setQueryData(["post", id], (oldData) => {
+      if (oldData) {
+        return {
+          ...oldData,
+          title: "boom boom mutated",
+        };
+      }
+    });
   }
 
   return (
@@ -32,6 +41,9 @@ function App() {
             <a onClick={() => setPostID(post.id)} href="#">
               {post.id} - {post.title} {cachedPost ? "(visited)" : ""}
             </a>
+            <button onClick={() => mutateTitle(post.id)}>
+              Mutate the title
+            </button>
           </p>
         );
       })}
