@@ -9,10 +9,8 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 function App() {
   const [postID, setPostID] = useState(null);
 
-  const { isLoading, data: posts } = useQuery(
-    ["posts"],
-    () => fetcher("https://jsonplaceholder.typicode.com/posts"),
-    { staleTime: Infinity }
+  const { isLoading, data: posts } = useQuery(["posts"], () =>
+    fetcher("https://jsonplaceholder.typicode.com/posts")
   );
 
   if (isLoading) return <h1>Loading...</h1>;
