@@ -1,43 +1,34 @@
 import React, { useState } from "react";
+import Post from "./Post";
 import "./App.css";
 import { useQuery } from "react-query";
 
-const fetcher = (repo) => {
-  return fetch(`https://api.github.com/repos/${repo}`).then((res) =>
-    res.json()
-  );
-};
+const fetcher = (url) => fetch(url).then((res) => res.json());
 
 function App() {
-  const [repoName, setRepoName] = useState("");
+  const [postID, setPostID] = useState(null);
 
-  const { isLoading, data } = useQuery(["github-data", repoName], () =>
-    fetcher(repoName)
+  const { isLoading, data: posts } = useQuery(["posts"], () =>
+    fetcher("https://jsonplaceholder.typicode.com/posts")
   );
 
-  if (isLoading) {
-    return (
-      <div className="App">
-        <input
-          type="text"
-          value={repoName}
-          onChange={(e) => setRepoName(e.target.value)}
-        />
-        <h2>Loading...</h2>
-      </div>
-    );
+  if (isLoading) return <h1>Loading...</h1>;
+
+  if (postID !== null) {
+    return <Post postID={postID} goBack={() => setPostID(null)} />;
   }
 
   return (
     <div className="App">
-      <input
-        type="text"
-        value={repoName}
-        onChange={(e) => setRepoName(e.target.value)}
-      />
-      <h2>Name: {data.name}</h2>
-      <h2>Desc: {data.description}</h2>
-      <h2>Stars: {data.stargazers_count}</h2>
+      {posts.map((post) => {
+        return (
+          <p key={post.id}>
+            <a onClick={() => setPostID(post.id)} href="#">
+              {post.id} - {post.title}
+            </a>
+          </p>
+        );
+      })}
     </div>
   );
 }
